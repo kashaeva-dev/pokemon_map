@@ -9,9 +9,18 @@ class Pokemon(models.Model):
     title_jp = models.CharField(max_length=200, verbose_name="Название по-японски")
     photo = models.ImageField(upload_to='pokemons', null=True, blank=True, verbose_name="Изображение")
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='Предок', null=True, blank=True, unique=True)
 
     def __str__(self):
         return str(self.title_ru)
+
+    def next_evolution(self):
+        try:
+            next_evolution = self.__class__.objects.get(parent=self)
+        except self.DoesNotExist:
+            next_evolution = False
+
+        return next_evolution
 
 
 class PokemonEntity(models.Model):
@@ -25,4 +34,3 @@ class PokemonEntity(models.Model):
     strength = models.IntegerField(verbose_name='Сила')
     defence = models.IntegerField(verbose_name='Защита')
     stamina = models.IntegerField(verbose_name='Выносливость')
-

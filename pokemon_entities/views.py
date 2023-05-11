@@ -85,6 +85,23 @@ def show_pokemon(request, pokemon_id):
         'title_jp': requested_pokemon.title_jp,
         'description': requested_pokemon.description,
     }
+    next_evolution = requested_pokemon.next_evolution()
+
+    if next_evolution:
+        pokemon['next_evolution'] = {
+            'pokemon_id': next_evolution.pk,
+            'title_ru': next_evolution.title_ru,
+            'img_url': request.build_absolute_uri(next_evolution.photo.url),
+        }
+
+    previous_evolution = requested_pokemon.parent
+
+    if previous_evolution:
+        pokemon['previous_evolution'] = {
+            'pokemon_id': previous_evolution.pk,
+            'title_ru': previous_evolution.title_ru,
+            'img_url': request.build_absolute_uri(previous_evolution.photo.url),
+        }
 
     return render(request, 'pokemon.html', context={
         'map': folium_map._repr_html_(), 'pokemon': pokemon
