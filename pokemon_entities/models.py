@@ -5,10 +5,10 @@ from django.db import models  # noqa F401
 # your models here
 class Pokemon(models.Model):
     title_ru = models.CharField(max_length=200, verbose_name="Название по-русски")
-    title_en = models.CharField(max_length=200, verbose_name="Название по-английски")
-    title_jp = models.CharField(max_length=200, verbose_name="Название по-японски")
+    title_en = models.CharField(max_length=200, verbose_name="Название по-английски", blank=True)
+    title_jp = models.CharField(max_length=200, verbose_name="Название по-японски", blank=True)
     photo = models.ImageField(upload_to='pokemons', null=True, blank=True, verbose_name="Изображение")
-    description = models.TextField(verbose_name='Описание', null=True, blank=True)
+    description = models.TextField(verbose_name='Описание', blank=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='Предок', null=True, blank=True, unique=True)
 
     def __str__(self):
@@ -29,8 +29,8 @@ class PokemonEntity(models.Model):
     lon = models.FloatField(verbose_name="Долгота")
     appeared_at = models.DateTimeField(verbose_name='Время появления')
     disappeared_at = models.DateTimeField(verbose_name='Время исчезновения')
-    level = models.IntegerField(verbose_name='Уровень')
-    health = models.IntegerField(verbose_name='Здоровье')
-    strength = models.IntegerField(verbose_name='Сила')
-    defence = models.IntegerField(verbose_name='Защита')
-    stamina = models.IntegerField(verbose_name='Выносливость')
+    level = models.IntegerField(verbose_name='Уровень', null=True, blank=True)
+    health = models.IntegerField(verbose_name='Здоровье', null=True, blank=True)
+    strength = models.IntegerField(verbose_name='Сила', null=True, blank=True)
+    defence = models.IntegerField(verbose_name='Защита', null=True, blank=True)
+    stamina = models.IntegerField(verbose_name='Выносливость', null=True, blank=True)
