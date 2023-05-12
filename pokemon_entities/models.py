@@ -16,19 +16,11 @@ class Pokemon(models.Model):
         null=True,
         blank=True,
         unique=True,
-        related_name='evolutions',
+        related_name='next_evolution',
     )
 
     def __str__(self):
         return str(self.title_ru)
-
-    def next_evolution(self):
-        try:
-            next_evolution = self.__class__.objects.get(parent=self)
-        except self.DoesNotExist:
-            next_evolution = False
-
-        return next_evolution
 
 
 class PokemonEntity(models.Model):
@@ -42,3 +34,6 @@ class PokemonEntity(models.Model):
     strength = models.IntegerField(verbose_name='Сила', null=True, blank=True)
     defence = models.IntegerField(verbose_name='Защита', null=True, blank=True)
     stamina = models.IntegerField(verbose_name='Выносливость', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.pokemon.title_ru} {self.level}'

@@ -85,7 +85,7 @@ def show_pokemon(request, pokemon_id):
         'title_jp': requested_pokemon.title_jp,
         'description': requested_pokemon.description,
     }
-    next_evolution = requested_pokemon.next_evolution()
+    next_evolution = requested_pokemon.next_evolution.first()
 
     if next_evolution:
         pokemon['next_evolution'] = {
