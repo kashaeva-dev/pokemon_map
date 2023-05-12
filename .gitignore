@@ -1,6 +1,7 @@
 .idea
 .python-version
 .gitignore
+.flake8
 # Created by https://www.gitignore.io
 
 ### OSX ###

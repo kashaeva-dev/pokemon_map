@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.template.defaulttags import url
 from django.urls import path, include
 
 from pokemon_entities import views
@@ -15,7 +14,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(
-        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
     )
 
 
