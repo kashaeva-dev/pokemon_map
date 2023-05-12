@@ -70,17 +70,13 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    try:
-        requested_pokemon = get_object_or_404(
-            Pokemon.objects.select_related(
-            'parent',
-        ),
-            pk=pokemon_id,
-        )
-    except django.http.response.Http404:
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
-
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
+
+    requested_pokemon = get_object_or_404(
+        Pokemon.objects.select_related('parent'),
+        pk=pokemon_id,
+    )
+
     pokemon_entities = PokemonEntity.objects.select_related('pokemon').filter(pokemon=requested_pokemon)
     for pokemon_entity in pokemon_entities:
         add_pokemon(
@@ -97,8 +93,8 @@ def show_pokemon(request, pokemon_id):
         'title_jp': requested_pokemon.title_jp,
         'description': requested_pokemon.description,
     }
-    next_evolution = requested_pokemon.next_evolution.first()
 
+    next_evolution = requested_pokemon.next_evolution.first()
     if next_evolution:
         pokemon['next_evolution'] = {
             'pokemon_id': next_evolution.pk,
@@ -107,7 +103,6 @@ def show_pokemon(request, pokemon_id):
         }
 
     previous_evolution = requested_pokemon.parent
-
     if previous_evolution:
         pokemon['previous_evolution'] = {
             'pokemon_id': previous_evolution.pk,
