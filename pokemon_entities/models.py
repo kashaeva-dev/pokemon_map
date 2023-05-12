@@ -1,4 +1,16 @@
 from django.db import models
+from django.urls import reverse
+
+
+class PokemonElementType(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Название стихии")
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Стихия покемона'
+        verbose_name_plural = 'Стихии покемонов'
 
 
 class Pokemon(models.Model):
@@ -16,9 +28,18 @@ class Pokemon(models.Model):
         unique=True,
         related_name='next_evolution',
     )
+    element_type = models.ManyToManyField(
+        PokemonElementType,
+        verbose_name='Стихии',
+        blank=True,
+        related_name='pokemons',
+    )
 
     def __str__(self):
         return self.title_ru
+
+    def get_absolute_url(self):
+        return reverse('pokemon', args=[str(self.id)])
 
     class Meta:
         verbose_name = 'Покемон'
