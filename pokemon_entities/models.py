@@ -22,6 +22,10 @@ class Pokemon(models.Model):
     def __str__(self):
         return str(self.title_ru)
 
+    class Meta:
+        verbose_name = 'Покемон'
+        verbose_name_plural = 'Покемоны'
+
 
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name="Покемон", related_name="entities")
@@ -37,3 +41,7 @@ class PokemonEntity(models.Model):
 
     def __str__(self):
         return f'{self.pokemon.title_ru} {self.level}'
+
+    class Meta:
+        verbose_name = 'Сущность покемона'
+        verbose_name_plural = 'Сущности покемонов'
