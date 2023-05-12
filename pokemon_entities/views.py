@@ -2,10 +2,11 @@ import django.http.response
 import folium
 import json
 
+from django.db.models import Prefetch
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from pytz import timezone as tz
+import pytz
 from .models import Pokemon, PokemonEntity
 from datetime import datetime
 
@@ -32,16 +33,21 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
 
 
 def show_all_pokemons(request):
-    pokemons = Pokemon.objects.all()
-    now = datetime.now()
-    pokemon_entities = PokemonEntity.objects.filter(
-        appeared_at__lte=now,
-        disappeared_at__gte=now,
-    )
+    now = datetime.now(tz=pytz.UTC)
+    pokemons = Pokemon.objects.prefetch_related(
+        Prefetch(
+            'entities',
+            queryset=PokemonEntity.objects.filter(
+                appeared_at__lte=now,
+                disappeared_at__gte=now,
+            ).select_related('pokemon'),
+            to_attr='available_entities',
+        )
+    ).all()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in pokemons:
-        for pokemon_entity in pokemon_entities.filter(pokemon=pokemon):
+        for pokemon_entity in pokemon.available_entities:
             add_pokemon(
                 folium_map, pokemon_entity.lat,
                 pokemon_entity.lon,
@@ -64,12 +70,17 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
     try:
-        requested_pokemon = get_object_or_404(Pokemon.objects.all(), pk=pokemon_id)
+        requested_pokemon = get_object_or_404(
+            Pokemon.objects.select_related(
+            'parent',
+        ),
+            pk=pokemon_id,
+        )
     except django.http.response.Http404:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    pokemon_entities = PokemonEntity.objects.filter(pokemon=requested_pokemon)
+    pokemon_entities = PokemonEntity.objects.select_related('pokemon').filter(pokemon=requested_pokemon)
     for pokemon_entity in pokemon_entities:
         add_pokemon(
             folium_map, pokemon_entity.lat,
