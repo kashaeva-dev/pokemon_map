@@ -2,14 +2,22 @@ import datetime
 
 from django.db import models  # noqa F401
 
-# your models here
+
 class Pokemon(models.Model):
     title_ru = models.CharField(max_length=200, verbose_name="Название по-русски")
     title_en = models.CharField(max_length=200, verbose_name="Название по-английски", blank=True)
     title_jp = models.CharField(max_length=200, verbose_name="Название по-японски", blank=True)
     photo = models.ImageField(upload_to='pokemons', null=True, blank=True, verbose_name="Изображение")
     description = models.TextField(verbose_name='Описание', blank=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='Предок', null=True, blank=True, unique=True)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        verbose_name='Предок',
+        null=True,
+        blank=True,
+        unique=True,
+        related_name='evolutions',
+    )
 
     def __str__(self):
         return str(self.title_ru)
