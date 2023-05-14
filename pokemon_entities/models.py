@@ -19,14 +19,13 @@ class Pokemon(models.Model):
     title_jp = models.CharField(max_length=200, verbose_name="Название по-японски", blank=True)
     photo = models.ImageField(upload_to='pokemons', null=True, blank=True, verbose_name="Изображение")
     description = models.TextField(verbose_name='Описание', blank=True)
-    parent = models.ForeignKey(
+    previous_evolution = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
         verbose_name='Предок',
         null=True,
         blank=True,
-        unique=True,
-        related_name='next_evolution',
+        related_name='next_evolutions',
     )
     element_type = models.ManyToManyField(
         PokemonElementType,
@@ -35,15 +34,15 @@ class Pokemon(models.Model):
         related_name='pokemons',
     )
 
+    class Meta:
+        verbose_name = 'Покемон'
+        verbose_name_plural = 'Покемоны'
+
     def __str__(self):
         return self.title_ru
 
     def get_absolute_url(self):
         return reverse('pokemon', args=[str(self.id)])
-
-    class Meta:
-        verbose_name = 'Покемон'
-        verbose_name_plural = 'Покемоны'
 
 
 class PokemonEntity(models.Model):
@@ -58,9 +57,9 @@ class PokemonEntity(models.Model):
     defence = models.IntegerField(verbose_name='Защита', null=True, blank=True)
     stamina = models.IntegerField(verbose_name='Выносливость', null=True, blank=True)
 
-    def __str__(self):
-        return f'{self.pokemon.title_ru} {self.level}'
-
     class Meta:
         verbose_name = 'Сущность покемона'
         verbose_name_plural = 'Сущности покемонов'
+
+    def __str__(self):
+        return f'{self.pokemon.title_ru} {self.level}'
